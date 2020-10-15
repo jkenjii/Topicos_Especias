@@ -104,8 +104,8 @@ ypred = ypred(x1,coef)
 plt.figure()
 plt.scatter(DataAdjust[:,0], DataAdjust[:,1],edgecolors='k')
 x=np.linspace(-60,60)
-#Reta da Componente Principal
-plt.plot(x, (-auto_VETORES[0][0]/auto_VETORES[1][0])*x, color='k',label='PCA') 
+#Reta da Componente Principal(foi utilizado a que possui o maior auto valor)
+plt.plot(x, (auto_VETORES[0][0]/auto_VETORES[1][0])*x, color='k',label='PCA') 
 #Reta da regressão
 plt.plot(x, coef[0][0] + x*coef[1][0], color='y', linewidth=1,linestyle='--',label='LMS')
 plt.title('USA Census')
