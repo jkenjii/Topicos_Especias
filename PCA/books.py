@@ -43,22 +43,26 @@ M = np.array([
 [2 ,  16 , 88],
 [0 ,  10,  62]])
 
-
+#media de cada coluna
 print(M)
 media_colunas = np.mean(M, axis=0)
 print(media_colunas)
 
+#retirar media dos valores
 DataAdjust = M - media_colunas
 print(DataAdjust)
 
+#retirar media dos valores
 matriz_cova = np.cov(DataAdjust, rowvar=False)
 print(matriz_cova)
 
+#biblioteca do numpy
 auto_VALORES, auto_VETORES = np.linalg.eig(matriz_cova)
 print("Auto Vetores: ", auto_VETORES)
 print("Auto Valores: ",auto_VALORES)
 
-p = np.dot(auto_VETORES.T,DataAdjust.T).T
+#Os novos valores pos PCA(nesse caso considera todas as componentes)
+p = np.matmul(auto_VETORES.T,DataAdjust.T).T
 print("Novos Valores: ",p)
 
 
