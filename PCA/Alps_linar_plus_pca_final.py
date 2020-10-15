@@ -108,8 +108,8 @@ coef = Prod_Matriz(inversa,XTY)
 plt.figure()
 plt.scatter(DataAdjust[:,0], DataAdjust[:,1],edgecolors='k')
 x=np.linspace(-10,10)
-#Reta da Componente Principal
-plt.plot(x, (auto_VETORES[0][1]/-auto_VETORES[1][1])*x, color='b',label='PCA')
+#Reta da Componente Principal(foi utilizado a que possui o maior auto valor)
+plt.plot(x, (auto_VETORES[0][1]/auto_VETORES[1][1])*x, color='b',label='PCA')
 #Reta da regressão 
 plt.plot(x, coef[0][0] + x*coef[1][0], color='y', linewidth=1,linestyle='--',label='LMS')
 plt.title('ALPS WATER')
