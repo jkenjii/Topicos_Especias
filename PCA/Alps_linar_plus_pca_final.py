@@ -2,7 +2,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 M = np.array([
     [194.5,20.79],
     [194.3,20.79],
@@ -22,26 +21,29 @@ M = np.array([
     [211.9,29.88],
     [212.2,30.06]])
 
-
-
 print(M)
+#media de cada coluna
 media_colunas = np.mean(M, axis=0)
 print(media_colunas)
 
+#retirar media dos valores
 DataAdjust = M - media_colunas
 print('Data Ajuste: ',DataAdjust)
 
+#por padrão a função considera as variavei as linhas, por isso a necessidade de transpor
 matriz_cova = np.cov(DataAdjust.T)
 print(matriz_cova)
 
+#biblioteca do numpy
 auto_VALORES, auto_VETORES = np.linalg.eig(matriz_cova)
 print("Auto Vetores: ", auto_VETORES)
 print("Auto Valores: ",auto_VALORES)
 
-
+#Os novos valores pos PCA(nesse caso considera todas as componentes)
 p = np.matmul(auto_VETORES.T,DataAdjust.T).T
 print("Novos Valores: ",p)
 
+#para gerar as entradas para a regressão
 X = []
 for i in range(len(DataAdjust)):
     X.append([1,DataAdjust[i][0]])
@@ -95,19 +97,21 @@ def estrairX(X):
         x1.append(float(X[i][1]))
     return x1
 
+#Método dos minimos quadrados para a regressão
 XT = Matriz_transposta(X) 
 XTX = Prod_Matriz(XT,X)
 XTY = Prod_Matriz(XT,y)
 inversa = Matriz_Inversa(XTX)
 coef = Prod_Matriz(inversa,XTY)
-x1 = estrairX(X)
-ypred = ypred(x1,coef)
 
+#plot dos gráficos
 plt.figure()
 plt.scatter(DataAdjust[:,0], DataAdjust[:,1],edgecolors='k')
 x=np.linspace(-10,10)
+#Reta da Componente Principal
 plt.plot(x, (auto_VETORES[0][1]/-auto_VETORES[1][1])*x, color='b',label='PCA')
-plt.plot(np.linspace(-10,10), coef[0][0] + x*coef[1][0], color='y', linewidth=1,linestyle='--',label='LMS')
+#Reta da regressão 
+plt.plot(x, coef[0][0] + x*coef[1][0], color='y', linewidth=1,linestyle='--',label='LMS')
 plt.title('ALPS WATER')
 plt.legend()
 plt.yticks(())
