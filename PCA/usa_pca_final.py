@@ -26,9 +26,22 @@ print('Data Ajuste: ',DataAdjust)
 
 #por padrão a função considera as variavei as linhas, por isso a necessidade de transpo
 matriz_cova = np.cov(DataAdjust.T)
-print(matriz_cova)
+print("Cov por .cov:",matriz_cova)
 
-#biblioteca do numpy
+#cov dos itens
+def cov(x, y):
+    x_media, y_media = x.mean(), y.mean()
+    return np.sum((x - x_media)*(y - y_media))/(len(x) - 1)
+
+#Calcula a matriz de convolução manualmente, item por item
+def cov_mat(X):
+    return np.array([[cov(X[0], X[0]), cov(X[0], X[1])], 
+                     [cov(X[1], X[0]), cov(X[1], X[1])]])
+
+byhand = cov_mat(DataAdjust.T)
+print("Cov manual:", byhand)
+
+#biblioteca do numpy,aplicado com a matriz gerada por .cov
 auto_VALORES, auto_VETORES = np.linalg.eig(matriz_cova)
 print("Auto Vetores: ", auto_VETORES)
 print("Auto Valores: ",auto_VALORES)
