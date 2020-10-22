@@ -67,12 +67,12 @@ conv2 = np.cov(x2.T) #matriz de conv da classe 2
 S_W = conv0 + conv1 + conv2 #within-class scatter matrix(somatoriA das matrizes de conv de cada classe)
 print(S_W)
 
-eig_vals, eig_vecs = np.linalg.eig(np.linalg.inv(S_W).dot(S_B)) #achar os autovetores e valores
+VALORES,VETORES = np.linalg.eig(np.linalg.inv(S_W).dot(S_B)) #achar os autovetores e valores
 
-idx = eig_vals.argsort()[::-1]  #indice maior para menor
-eig_vecs = eig_vecs[:, idx]
-print(eig_vecs)
-W = eig_vecs[:, :2] #DIMENSÕES REDUZIDAS DO LDA
+idx = VALORES.argsort()[::-1]  #indice maior para menor
+VETORES =VETORES[:, idx]
+print(VETORES)
+W = VETORES[:, :2] #DIMENSÕES REDUZIDAS DO LDA
 print(W)
 transformada = X.dot(W)
 
