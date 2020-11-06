@@ -1,0 +1,121 @@
+import pandas as pd
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn import datasets
+import matplotlib.pyplot as plt
+
+iris_ = datasets.load_iris()
+M = iris_.data
+#Iris-Setosa\n                - Iris-Versicolour\n                - Iris-Virginica\n 
+atributos = ['SepalLength', 'SepalWidth', 'PetalLength', 'PetalWidth']
+iris = load_iris()
+
+iris_df = pd.DataFrame(data= iris.data, columns= atributos)
+target_df = pd.DataFrame(data= iris.target, columns= ['Class'])
+
+irisdata = pd.concat([iris_df, target_df], axis = 1)
+print (irisdata)
+
+setosa = irisdata['Class'][irisdata['Class'] == 0].count()
+versicolor = irisdata['Class'][irisdata['Class'] == 1].count()
+virginica = irisdata['Class'][irisdata['Class'] == 2].count()
+total = irisdata['Class'].count()
+
+P_setosa = setosa/total
+P_versicolor = versicolor/total
+P_virginica = virginica/total
+
+print(P_setosa,P_versicolor,P_virginica)
+
+iris_means = irisdata.groupby('Class').mean()
+print(iris_means)
+iris_std = irisdata.groupby('Class').std()
+print(iris_std)
+
+#Means setosa
+setosa_sl_mean = iris_means['SepalLength'][iris_means.index == 0].values[0]
+print(setosa_sl_mean)
+setosa_sw_mean = iris_means['SepalWidth'][iris_means.index == 0].values[0]
+setosa_pl_mean = iris_means['PetalLength'][iris_means.index == 0].values[0]
+setosa_pw_mean = iris_means['PetalWidth'][iris_means.index == 0].values[0]
+
+#Means versicolor
+versicolor_sl_mean = iris_means['SepalLength'][iris_means.index == 1].values[0]
+print(versicolor_sl_mean)
+versicolor_sw_mean = iris_means['SepalWidth'][iris_means.index == 1].values[0]
+versicolor_pl_mean = iris_means['PetalLength'][iris_means.index == 1].values[0]
+versicolor_pw_mean = iris_means['PetalWidth'][iris_means.index == 1].values[0]
+
+#Means virginica 
+virginica_sl_mean = iris_means['SepalLength'][iris_means.index == 2].values[0]
+print(virginica_sl_mean)
+virginica_sw_mean = iris_means['SepalWidth'][iris_means.index == 2].values[0]
+virginica_pl_mean = iris_means['PetalLength'][iris_means.index == 2].values[0]
+virginica_pw_mean = iris_means['PetalWidth'][iris_means.index == 2].values[0]
+
+#std setosa
+setosa_sl_std = iris_std['SepalLength'][iris_std.index == 0].values[0]
+print(setosa_sl_std)
+setosa_sw_std = iris_std['SepalWidth'][iris_std.index == 0].values[0]
+setosa_pl_std = iris_std['PetalLength'][iris_std.index == 0].values[0]
+setosa_pw_std = iris_std['PetalWidth'][iris_std.index == 0].values[0]
+
+#std versicolor
+versicolor_sl_std = iris_std['SepalLength'][iris_std.index == 1].values[0]
+print(versicolor_sl_std)
+versicolor_sw_std = iris_std['SepalWidth'][iris_std.index == 1].values[0]
+versicolor_pl_std = iris_std['PetalLength'][iris_std.index == 1].values[0]
+versicolor_pw_std = iris_std['PetalWidth'][iris_std.index == 1].values[0]
+
+#std virginica
+virginica_sl_std = iris_std['SepalLength'][iris_std.index == 2].values[0]
+print(virginica_sl_std)
+virginica_sw_std = iris_std['SepalWidth'][iris_std.index == 2].values[0]
+virginica_pl_std = iris_std['PetalLength'][iris_std.index == 2].values[0]
+virginica_pw_std = iris_std['PetalWidth'][iris_std.index == 2].values[0]
+
+def p_x_y(x,mean,std):
+
+	p = 1/(std*np.sqrt(2*np.pi))*np.exp((-(x-mean)**2)/(2*(std)**2))
+	return p
+
+label = []
+for i in range(len(irisdata)):
+
+	a = P_setosa*p_x_y(irisdata['SepalLength'][i], setosa_sl_mean,setosa_sl_std)*p_x_y(irisdata['SepalWidth'][i],setosa_sw_mean,setosa_sw_std)*\
+	p_x_y(irisdata['PetalLength'][i],setosa_pl_mean,setosa_pl_std)*p_x_y(irisdata['PetalWidth'][i],setosa_pw_mean,setosa_sw_std)
+	b  = P_versicolor*p_x_y(irisdata['SepalLength'][i],versicolor_sl_mean,versicolor_sl_std)*p_x_y(irisdata['SepalWidth'][i],versicolor_sw_mean,versicolor_sw_std)*\
+	p_x_y(irisdata['PetalLength'][i],versicolor_pl_mean,versicolor_pl_std)*p_x_y(irisdata['PetalWidth'][i],versicolor_pw_mean,versicolor_pw_std)
+	c = P_virginica*p_x_y(irisdata['SepalLength'][i],virginica_sl_mean,virginica_sl_std)*p_x_y(irisdata['SepalWidth'][i],virginica_sw_mean,virginica_sw_std)*\
+	p_x_y(irisdata['PetalLength'][i],virginica_pl_mean,virginica_pl_std)*p_x_y(irisdata['PetalWidth'][i],virginica_pw_mean,virginica_sw_std)
+	label.append([a,b,c])
+
+ordem = np.array(label)
+classe = np.argmax(ordem,axis=1)
+print(classe)
+
+media_colunas = np.mean(M, axis=0)
+print(media_colunas)
+
+DataAdjust = M - media_colunas
+print(DataAdjust)
+
+matriz_cova = np.cov(DataAdjust, rowvar=False)
+print(matriz_cova)
+
+auto_VALORES, auto_VETORES = np.linalg.eig(matriz_cova)
+
+idx = auto_VALORES.argsort()[::-1]  #indice maior para menor
+auto_VETORES = auto_VETORES[:, idx]
+W = auto_VETORES[:, :2] #DIMENSÕES REDUZIDAS DO PCA (2 dimensões no caso)
+reduzida = M.dot(W) 
+print(reduzida)
+
+print("Vetores: ", auto_VETORES)
+print("Valores: ",auto_VALORES)
+
+plt.scatter(reduzida[:,0],reduzida[:,1],c=classe)
+plt.title('Naive Bayes ~ PCA')
+plt.legend()
+plt.show()
