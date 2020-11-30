@@ -68,11 +68,10 @@ class Perceptron(object):
     def __init__(self, atributos, epochs=1000, learning_rate=0.0001):
         self.epochs = epochs
         self.learning_rate = learning_rate
-        self.weights = np.zeros(atributos)
-        self.bias = np.zeros(1)
+        self.weights = np.zeros(atributos)        
            
     def predict(self, inputs):
-        funcao = np.dot(inputs, self.weights) + self.bias
+        funcao = np.dot(inputs, self.weights) 
         if funcao > 0:
           binario = 1
         else:
@@ -83,8 +82,7 @@ class Perceptron(object):
         for abrobrinha in range(self.epochs):
             for entrada, saida in zip(train_inputs, saidas):
                 prediction = self.predict(entrada)                
-                self.weights = self.weights + (self.learning_rate * entrada * (saida - prediction))
-                self.bias  = self.bias + (self.learning_rate * (saida - prediction))
+                self.weights = self.weights + (self.learning_rate * entrada * (saida - prediction))                
         print(self.weights)
         print(self.bias)
 
