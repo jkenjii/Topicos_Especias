@@ -34,7 +34,7 @@ def sigmoide(A, derivada=False):# função da sigmoide com a sua derivada, caso 
             A[i] = 1 / (1 + math.exp(-A[i]))
     return A
 
-# Define parameter
+# Define parametros
 learning_rate = 0.0008
 epochs = 5000
 neuron = [4, 3, 3] #arquiterura da rede
