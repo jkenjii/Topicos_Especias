@@ -1,16 +1,5 @@
 
-
-"""
-SECTION 1 : Load and setup data for training
-"""
-
-import csv
-import random
-import math
 import numpy as np
-from sklearn import datasets
-from sklearn.model_selection import train_test_split #para 'splitar' o dataset
-
 import csv
 import random
 import math
@@ -19,7 +8,7 @@ from sklearn.model_selection import train_test_split #para 'splitar' o dataset
 
 iris = datasets.load_iris()
 
-X = iris.data #pegar somente setosa e versicolor
+X = iris.data 
 y = iris.target
 target_names = iris.target_names
 features = iris.feature_names
@@ -35,46 +24,9 @@ train_X , test_X , train_y, test_y = train_test_split(x,y, test_size = 0.25)
 
 print(train_X)
 print(test_y)
-"""
-SECTION 2 : Build and Train Model
-Multilayer perceptron model, with one hidden layer.
-input layer : 4 neuron, represents the feature of Iris
-hidden layer : 3 neuron, activation using sigmoid
-output layer : 3 neuron, represents the class of Iris
-optimizer = gradient descent
-loss function = Square ROot Error
-learning rate = 0.005
-epoch = 400
-best result = 96.67%
-"""
 
-def matrix_mul_bias(A, B, bias): # Matrix multiplication (for Testing)
-    C = [[0 for i in range(len(B[0]))] for i in range(len(A))]    
-    for i in range(len(A)):
-        for j in range(len(B[0])):
-            for k in range(len(B)):
-                C[i][j] += A[i][k] * B[k][j]
-            C[i][j] = C[i][j] + bias[j]
-    return C
-
-def vec_mat_bias(A, B, bias): # Vector (A) x matrix (B) multiplication
-    C = [0 for i in range(len(B[0]))]
-    for j in range(len(B[0])):
-        for k in range(len(B)):
-            C[j] += (A[k] * B[k][j]) + bias[j]
-            
-    return C
-
-
-def mat_vec(A, B): # Matrix (A) x vector (B) multipilicatoin (for backprop)
-    C = [0 for i in range(len(A))]
-    for i in range(len(A)):
-        for j in range(len(B)):
-            C[i] += A[i][j] * B[j]
-    return C
-
-def sigmoid(A, deriv=False):
-    if deriv: # derivation of sigmoid (for backprop)
+def sigmoide(A, derivada=False):# função da sigmoide com a sua derivada, caso requisitada
+    if derivada: 
         for i in range(len(A)):
             A[i] = A[i] * (1 - A[i])
     else:
@@ -83,91 +35,77 @@ def sigmoid(A, deriv=False):
     return A
 
 # Define parameter
-alfa = 0.0008
-epoch = 5000
-neuron = [4, 5, 3] # number of neuron each layer
+learning_rate = 0.0008
+epochs = 5000
+neuron = [4, 3, 3] #arquiterura da rede
 
-# Initiate weight and bias with 0 value
-weight = [[0 for j in range(neuron[1])] for i in range(neuron[0])]
-weight_2 = [[0 for j in range(neuron[2])] for i in range(neuron[1])]
-bias = [0 for i in range(neuron[1])]
-bias_2 = [0 for i in range(neuron[2])]
+#criar os pesos com o valor 0
+W_1 = [[0 for j in range(neuron[1])] for i in range(neuron[0])]
+W_2 = [[0 for j in range(neuron[2])] for i in range(neuron[1])]
+B_1 = [0 for i in range(neuron[1])]
+B_2 = [0 for i in range(neuron[2])]
 
-# Initiate weight with random between -1.0 ... 1.0
+#colocar valores aleatorios nos pesos(-1,1)
 for i in range(neuron[0]):
     for j in range(neuron[1]):
-        weight[i][j] = 2 * random.random() - 1
+        W_1[i][j] = 2 * random.random() - 1
 
 for i in range(neuron[1]):
     for j in range(neuron[2]):
-        weight_2[i][j] = 2 * random.random() - 1
+        W_2[i][j] = 2 * random.random() - 1
 
 
-for e in range(epoch):
-    cost_total = 0
-    for idx, x in enumerate(train_X): # Update for each data; SGD
+for abrobrinha in range(epochs):
+    print('Epochs:', abrobrinha)    
+    for item, x in enumerate(train_X):         
         
-        # Forward propagation
-        h_1 = vec_mat_bias(x, weight, bias)
-        X_1 = sigmoid(h_1)
-        h_2 = vec_mat_bias(X_1, weight_2, bias_2)
-        X_2 = sigmoid(h_2)
-        print(X_2)
+        h_1 = np.dot(x, W_1) + B_1
+        X_1 = sigmoide(h_1)
+        h_2 = np.dot(X_1, W_2) +  B_2
+        X_2 = sigmoide(h_2)
+        #print(X_2)
         
-        # Convert to One-hot target
+        #gambia
         target = [0, 0, 0]
-        target[int(train_y[idx])] = 1
-
-        # Cost function, Square Root Eror
-        eror = 0
-        for i in range(neuron[2]):
-            eror +=  (target[i] - X_2[i]) ** 2 
-        cost_total += eror * 1 / neuron[2]
-
-        # Backward propagation
-        # Update weight_2 and bias_2 (layer 2)
+        target[int(train_y[item])] = 1
+        #print(target)      
+        
+        #att camada 2
         delta_2 = []
         for j in range(neuron[2]):
             delta_2.append(-1 * 2. / neuron[2] * (target[j]-X_2[j]) * X_2[j] * (1-X_2[j]))
 
         for i in range(neuron[1]):
             for j in range(neuron[2]):
-                weight_2[i][j] -= alfa * (delta_2[j] * X_1[i])
-                bias_2[j] -= alfa * delta_2[j]
+                W_2[i][j] -= learning_rate * (delta_2[j] * X_1[i])
+                B_2[j] -= learning_rate * delta_2[j]
         
-        # Update weight and bias (layer 1)
-        delta_1 = mat_vec(weight_2, delta_2)
+        #att camada 1
+        delta_1 = np.dot(W_2, delta_2)
         for j in range(neuron[1]):
             delta_1[j] = delta_1[j] * (X_1[j] * (1-X_1[j]))
         
         for i in range(neuron[0]):
             for j in range(neuron[1]):
-                weight[i][j] -=  alfa * (delta_1[j] * x[i])
-                bias[j] -= alfa * delta_1[j]
+                W_1[i][j] -=  learning_rate * (delta_1[j] * x[i])
+                B_1[j] -= learning_rate * delta_1[j]
     
-    cost_total /= len(train_X)
-    if(e % 100 == 0):
-        print(cost_total)
 
-"""
-SECTION 3 : Testing
-"""
+out = np.dot(test_X, W_1) + B_1
+out_1 = np.dot(out, W_2) + B_1
 
-res = matrix_mul_bias(test_X, weight, bias)
-res_2 = matrix_mul_bias(res, weight_2, bias)
+print(out_1)
 
-print(res_2)
-# Get prediction
 preds = []
-for r in res_2:
-    preds.append(max(enumerate(r), key=lambda x:x[1])[0])
+for r in out_1:
+    preds.append(max(enumerate(r), key=lambda x:x[1])[0]) #pega o valor do indice de maior valor
 
-# Print prediction
 print(preds)
+print(test_y)
 
-# Calculate accuration
+#acuracia
 acc = 0.0
 for i in range(len(preds)):
     if preds[i] == int(test_y[i]):
         acc += 1
-print(acc / len(preds) * 100, "%")
+print('Acuracia: ', acc / len(preds) * 100, "%")
