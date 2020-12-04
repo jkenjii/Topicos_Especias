@@ -13,12 +13,15 @@ X = []
 y = []
 for i in range(len(data)):
     X.append(data[i][:-1])
-    y.append(data[i][-1:])
+    if data[i][-1:] == 2:
+        y.append(0)
+    else:
+        y.append(1)
+    
 X = np.array(X).tolist()
-y_1 = np.array(y).tolist()
-y = []
-for j in range(len(y_1)):
-    y.append(y_1[j][0])
+y = np.array(y).tolist()
+print(X)
+
 X = np.array(X)
 y = np.array(y)
 print(X)
@@ -42,8 +45,8 @@ def sigmoide(A, derivada=False):# função da sigmoide com a sua derivada, caso 
 
 # Define parameter
 learning_rate = 0.0008
-epochs = 5000
-neuron = [10, 20, 3] #arquiterura da rede
+epochs = 100
+neuron = [10, 2, 2] #arquiterura da rede
 
 #criar os pesos com o valor 0
 W_1 = [[0 for j in range(neuron[1])] for i in range(neuron[0])]
@@ -72,7 +75,7 @@ for abrobrinha in range(epochs):
         #print(X_2)
         
         #gambia
-        target = [0, 0, 0]
+        target = [0, 0]
         target[int(train_y[item])] = 1
         #print(target)      
         
@@ -115,3 +118,6 @@ for i in range(len(preds)):
     if preds[i] == int(test_y[i]):
         acc += 1
 print('Acuracia: ', acc / len(preds) * 100, "%")
+
+#apresentou uma acuracia de 96%
+#alterando para 10 na segunda camada foi para 87%
